@@ -224,15 +224,9 @@ python -m unittest discover -s tests -v
 
 ## Star History
 
-## <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="28" style="vertical-align: middle;" /> Star History
-
 <p align="center">
   <a href="https://star-history.com/#k4slr/reportforge&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=k4slr/reportforge&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=k4slr/reportforge&type=Date" />
-      <img alt="ReportForge Star History Chart" src="https://api.star-history.com/svg?repos=k4slr/reportforge&type=Date" width="100%" />
-    </picture>
+    <img src="assets/star-history.svg" alt="ReportForge Star History Chart" width="100%" />
   </a>
 </p>
 
