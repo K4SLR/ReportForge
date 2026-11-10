@@ -224,6 +224,8 @@ python -m unittest discover -s tests -v
 
 ## Star History
 
+<img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="28" style="vertical-align: middle;" /> Star History
+
 <p align="center">
   <a href="https://star-history.com/#K4SLR/reportforge&Date">
     <picture>
