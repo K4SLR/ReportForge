@@ -1,13 +1,18 @@
-# ReportForge
+<p align="center">
+  <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="160" />
+</p>
+
+<h1 align="center">ReportForge — Automated CSIRT & VDP Report Engine</h1>
 
 <p align="center">
-  <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="200" />
+  <strong>Automated Multi-CSIRT Compliance Reporting, Dual Template Ingestion, CVSS v3.1 Engine & Evidence Sanitizer</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml"><img src="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml/badge.svg" alt="ReportForge CI Status" /></a>
+  <a href="https://github.com/K4SLR/ReportForge/actions/workflows/ci.yml"><img src="https://github.com/K4SLR/ReportForge/actions/workflows/ci.yml/badge.svg" alt="ReportForge CI Status" /></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python Version" />
   <img src="https://img.shields.io/badge/release-v2.0.0-0ea5e9" alt="Release Version" />
+  <img src="https://img.shields.io/badge/output-DOCX%20%7C%20MD%20%7C%20JSON-success" alt="Output Formats" />
   <img src="https://img.shields.io/badge/license-MIT-informational" alt="License" />
 </p>
 
