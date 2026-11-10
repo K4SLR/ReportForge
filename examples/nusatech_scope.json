@@ -1,0 +1,15 @@
+{
+  "program_name": "NusaTech CSIRT Vulnerability Disclosure Program (VDP)",
+  "in_scope": [
+    "*.nusatech.local",
+    "portal.nusatech.local"
+  ],
+  "out_of_scope": [
+    "legacy-archive.nusatech.local*"
+  ],
+  "rules": [
+    "Pengujian hanya dilakukan secara etis dan terkendali.",
+    "Dilarang melakukan serangan DoS/DDoS atau automated mass scanning.",
+    "Wajib menyensor seluruh bukti kredensial aktif sebelum pengiriman laporan."
+  ]
+}

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reportforge"
+version = "2.0.0"
+description = "Formal Academic & CSIRT VDP Compliance Report Generator (Monochrome Times New Roman Edition)"
+authors = [{ name = "k4slr" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "python-docx>=1.1.0",
+    "requests>=2.31.0"
+]
+
+[project.scripts]
+reportforge = "reportforge.cli:main"
