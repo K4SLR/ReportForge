@@ -1,13 +1,18 @@
-# ReportForge
+<p align="center">
+  <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="160" />
+</p>
+
+<h1 align="center">ReportForge — Automated CSIRT & VDP Report Engine</h1>
 
 <p align="center">
-  <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="200" />
+  <strong>Automated Multi-CSIRT Compliance Reporting, Dual Template Ingestion, CVSS v3.1 Engine & Evidence Sanitizer</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml"><img src="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml/badge.svg" alt="ReportForge CI Status" /></a>
+  <a href="https://github.com/K4SLR/ReportForge/actions/workflows/ci.yml"><img src="https://github.com/K4SLR/ReportForge/actions/workflows/ci.yml/badge.svg" alt="ReportForge CI Status" /></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python Version" />
   <img src="https://img.shields.io/badge/release-v2.0.0-0ea5e9" alt="Release Version" />
+  <img src="https://img.shields.io/badge/output-DOCX%20%7C%20MD%20%7C%20JSON-success" alt="Output Formats" />
   <img src="https://img.shields.io/badge/license-MIT-informational" alt="License" />
 </p>
 
@@ -224,11 +229,14 @@ python -m unittest discover -s tests -v
 
 ## Star History
 
-<p align="center">
-  <a href="https://star-history.com/#k4slr/reportforge&Date">
-    <img src="assets/star-history.svg" alt="ReportForge Star History Chart" width="100%" />
-  </a>
-</p>
+<a href="https://www.star-history.com/?repos=K4SLR%2Freportforge&type=timeline&releases=&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=K4SLR/reportforge&type=timeline&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=K4SLR/reportforge&type=timeline&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=K4SLR/reportforge&type=timeline&legend=top-left" />
+ </picture>
+</a>
+
 
 ---
 
