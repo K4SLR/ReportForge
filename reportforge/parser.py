@@ -41,6 +41,7 @@ class FindingItem:
     remediation_lang: str = "text"
 
     def to_dict(self) -> Dict[str, Any]:
+        """Exports sanitized finding dictionary with zero unsanitized credentials."""
         return {
             "id": self.id,
             "title": self.title,
@@ -75,19 +76,19 @@ def load_findings(
 ) -> List[FindingItem]:
     path = Path(json_path)
     if not path.is_file():
-        raise FileNotFoundError(f"File temuan tidak ditemukan: {path}")
+        raise FileNotFoundError(f"Findings file not found: {path}")
 
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     if not isinstance(data, list):
-        raise ValueError("Format file temuan harus berupa JSON Array ([...])")
+        raise ValueError("Findings file must contain a JSON Array ([...])")
 
     guard: Optional[ScopeGuard] = None
     if scope_path:
         sp = Path(scope_path)
         if not sp.is_file():
-            raise FileNotFoundError(f"File scope tidak ditemukan: {sp}")
+            raise FileNotFoundError(f"Scope configuration file not found: {sp}")
         with open(sp, "r", encoding="utf-8") as sf:
             sdata = json.load(sf)
         guard = ScopeGuard(
@@ -98,17 +99,17 @@ def load_findings(
     findings: List[FindingItem] = []
     for idx, row in enumerate(data, 1):
         if not isinstance(row, dict):
-            raise ValueError(f"Item temuan #{idx} harus berupa JSON object")
+            raise ValueError(f"Finding item #{idx} must be a JSON object")
 
         fid = clean_xml_string(row.get("id", f"VULN-{idx:03d}"))
-        title = clean_xml_string(row.get("title", "Kerentanan Keamanan Aplikasi"))
+        title = clean_xml_string(row.get("title", "Application Security Vulnerability"))
         endpoint = clean_xml_string(row.get("endpoint", "-"))
         vuln_type = clean_xml_string(row.get("vuln_type", "General Flaw"))
         cvss_vector = clean_xml_string(row.get("cvss_vector", ""))
         description = clean_xml_string(row.get("description", "-"))
         impact = clean_xml_string(
             row.get("impact")
-            or "Berpotensi mengganggu kerahasiaan (confidentiality), integritas (integrity), dan ketersediaan (availability) data pada sistem elektronik."
+            or "Potential compromise of confidentiality, integrity, and availability of the target information system."
         )
         status = clean_xml_string(row.get("status", "OPEN"))
 

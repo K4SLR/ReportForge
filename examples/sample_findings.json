@@ -1,61 +1,61 @@
 [
   {
     "id": "NUSA-001",
-    "title": "Broken Object Level Authorization (IDOR) pada Endpoint Unduhan Dokumen Telemetri",
-    "endpoint": "https://portal.nusatech.local/api/v1/dokumen/unduh?id=801",
+    "title": "Broken Object Level Authorization (IDOR) on Telemetry Document Export Endpoint",
+    "endpoint": "https://portal.nusatech.local/api/v1/documents/export?id=801",
     "vuln_type": "IDOR",
     "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-    "description": "Titik akhir unduhan dokumen tidak memverifikasi kepemilikan sesi akun pengguna terhadap parameter pengenal ID dokumen yang diminta, memungkinkan pengaksesan dokumen antar-pengguna.",
-    "impact": "Pengguna terautentikasi dapat membaca dan mengunduh berkas laporan telemetri internal milik pengguna lain dengan mengganti nilai parameter id.",
+    "description": "The document export endpoint fails to validate whether the requested document identifier belongs to the currently authenticated user session, allowing unauthorized cross-account document retrieval.",
+    "impact": "Authenticated users with standard privileges can read and download restricted telemetry archive documents belonging to other accounts by iterating the sequential 'id' parameter.",
     "status": "OPEN",
-    "asset_name": "Portal Layanan Informasi & Telemetri NusaTech",
+    "asset_name": "NusaTech Telemetry & Information Service Portal",
     "asset_type": "Website / API",
     "domain_ip": "portal.nusatech.local / 192.0.2.10",
     "app_version": "v2.1",
     "steps_to_reproduce": [
-      "Lakukan autentikasi menggunakan Akun Uji A (user_id: 501) dan catat URL unduhan dokumen milik Akun A (misal id=801).",
-      "Buka sesi peramban penyamaran terpisah (Incognito), lalu lakukan autentikasi menggunakan Akun Uji B (user_id: 502).",
-      "Akses URL unduhan https://portal.nusatech.local/api/v1/dokumen/unduh?id=801 menggunakan sesi Akun Uji B dan amati bahwa berkas dokumen Akun Uji A berhasil terunduh dengan kode HTTP 200 OK."
+      "Authenticate to https://portal.nusatech.local using Test Account A (user_id: 501) and record the document export URL for an owned report (e.g., id=801).",
+      "Open an isolated incognito browser session and authenticate using Test Account B (user_id: 502).",
+      "Send a GET request to https://portal.nusatech.local/api/v1/documents/export?id=801 using Test Account B's session and observe that Test Account A's document is returned with HTTP 200 OK."
     ],
-    "raw_http_request": "GET /api/v1/dokumen/unduh?id=801&api_key=sk_live_dummy9988 HTTP/1.1\r\nHost: portal.nusatech.local\r\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummysecret\r\nCookie: session_id=sess_dummy12345; theme=light\r\nUser-Agent: Mozilla/5.0\r\n\r\n",
-    "raw_http_response": "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\n\r\n{\"status\": \"success\", \"doc_id\": 801, \"owner_account\": \"user_a@nusatech.local\", \"document_title\": \"Laporan Telemetri Q3\", \"token\": \"internal_secret_token\"}"
+    "raw_http_request": "GET /api/v1/documents/export?id=801&api_key=sk_live_dummy9988 HTTP/1.1\r\nHost: portal.nusatech.local\r\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummysecret\r\nCookie: session_id=sess_dummy12345; theme=dark\r\nUser-Agent: Mozilla/5.0\r\n\r\n",
+    "raw_http_response": "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\n\r\n{\"status\": \"success\", \"doc_id\": 801, \"owner_account\": \"user_a@nusatech.local\", \"document_title\": \"Q3 Internal Telemetry Audit\", \"token\": \"internal_secret_token\"}"
   },
   {
     "id": "NUSA-002",
-    "title": "SQL Injection pada Parameter Filter Data Stasiun Observasi",
-    "endpoint": "https://portal.nusatech.local/api/v1/observasi/filter?stasiun=101",
+    "title": "SQL Injection on Observation Station Filter Parameter",
+    "endpoint": "https://portal.nusatech.local/api/v1/observations/filter?station=101",
     "vuln_type": "SQLI",
     "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
-    "description": "Parameter kueri 'stasiun' digabungkan secara langsung ke dalam sintaks perintah SQL tanpa melalui parameterized query maupun sanitasi input.",
-    "impact": "Penyerang tanpa autentikasi dapat memanipulasi kueri basis data untuk mengekstraksi seluruh skema tabel, akun pengguna, serta memodifikasi catatan observasi.",
+    "description": "The 'station' query parameter is concatenated directly into a backend SQL statement without parameterized query binding or strict input type validation.",
+    "impact": "An unauthenticated remote attacker can manipulate the SQL query structure to extract database schemas, read sensitive tables, and potentially modify observation records.",
     "status": "OPEN",
-    "asset_name": "Portal Layanan Informasi & Telemetri NusaTech",
+    "asset_name": "NusaTech Telemetry & Information Service Portal",
     "asset_type": "Website / API",
     "domain_ip": "portal.nusatech.local / 192.0.2.10",
     "app_version": "v2.1",
     "steps_to_reproduce": [
-      "Kirim permintaan GET menuju endpoint https://portal.nusatech.local/api/v1/observasi/filter?stasiun=101.",
-      "Sisipkan muatan uji logika Boolean (misal: 101' OR 1=1 --) pada parameter stasiun.",
-      "Amati perbedaan respons data yang menunjukkan bahwa sintaks SQL dieksekusi langsung oleh mesin basis data."
+      "Send a baseline GET request to https://portal.nusatech.local/api/v1/observations/filter?station=101 and record the standard JSON response.",
+      "Supply a boolean-based SQL test payload in the station parameter to verify query evaluation differences.",
+      "Observe the deterministic difference in the returned dataset confirming direct SQL interpretation."
     ],
-    "raw_http_request": "GET /api/v1/observasi/filter?stasiun=101' OR 1=1 -- HTTP/1.1\r\nHost: portal.nusatech.local\r\nUser-Agent: Mozilla/5.0\r\nAccept: application/json\r\n\r\n"
+    "raw_http_request": "GET /api/v1/observations/filter?station=101 HTTP/1.1\r\nHost: portal.nusatech.local\r\nUser-Agent: Mozilla/5.0\r\nAccept: application/json\r\n\r\n"
   },
   {
     "id": "NUSA-003",
-    "title": "Verbose Server Banner Information Disclosure pada Subdomain Arsip Lama",
+    "title": "Verbose Server Banner Information Disclosure on Legacy Archive Subdomain",
     "endpoint": "https://legacy-archive.nusatech.local/status",
     "vuln_type": "INFO_DISCLOSURE",
     "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
-    "description": "Peladen menampilkan banner versi Apache dan modul internal secara rinci pada header respons (Catatan: Target merupakan Out-of-Scope).",
-    "impact": "Mempermudah pemetaan versi perangkat lunak untuk serangan bertarget pada sistem usang.",
+    "description": "The legacy archive server exposes detailed web server and module version banners in HTTP response headers (Note: Target is Out-of-Scope).",
+    "impact": "Facilitates version fingerprinting of internal server components on a legacy host.",
     "status": "IGNORED",
-    "asset_name": "Subdomain Arsip Legacy Fiktif",
+    "asset_name": "NusaTech Legacy Archive Subdomain",
     "asset_type": "Server",
     "domain_ip": "legacy-archive.nusatech.local / 192.0.2.200",
     "app_version": "v1.0",
     "steps_to_reproduce": [
-      "Kirim permintaan HEAD ke https://legacy-archive.nusatech.local/status.",
-      "Periksa nilai header Server dan X-Powered-By."
+      "Send an HTTP HEAD request to https://legacy-archive.nusatech.local/status.",
+      "Inspect the Server and X-Powered-By headers in the response."
     ],
     "raw_http_request": "HEAD /status HTTP/1.1\r\nHost: legacy-archive.nusatech.local\r\n\r\n"
   }

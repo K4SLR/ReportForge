@@ -8,8 +8,8 @@
     "legacy-archive.nusatech.local*"
   ],
   "rules": [
-    "Pengujian hanya dilakukan secara etis dan terkendali.",
-    "Dilarang melakukan serangan DoS/DDoS atau automated mass scanning.",
-    "Wajib menyensor seluruh bukti kredensial aktif sebelum pengiriman laporan."
+    "All security assessments must be conducted ethically and in a controlled manner.",
+    "Denial of Service (DoS/DDoS) and automated mass scanning are strictly prohibited.",
+    "All active session credentials and tokens must be redacted prior to report submission."
   ]
 }

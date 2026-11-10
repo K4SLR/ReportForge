@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -10,15 +11,15 @@ from .registry import PRESET_CATALOG, PresetConfig
 
 class TemplateBuilder:
     """
-    Generates formal, monochrome, Times New Roman, justified
-    CSIRT VDP report templates structured like a formal academic makalah/proposal.
+    Generates clean, standardized CSIRT VDP .docx report templates
+    with Times New Roman typography, black-and-white table borders, and justified text.
     """
 
     FONT_NAME = "Times New Roman"
     BLACK = RGBColor(0, 0, 0)
 
     @staticmethod
-    def set_table_borders_black(table, sz="4"):
+    def set_table_borders_black(table: Any, sz: str = "4") -> None:
         tbl_pr = table._tbl.tblPr
         borders = tbl_pr.first_child_found_in("w:tblBorders")
         if borders is None:
@@ -36,7 +37,7 @@ class TemplateBuilder:
             borders.append(elem)
 
     @staticmethod
-    def set_table_borderless(table):
+    def set_table_borderless(table: Any) -> None:
         tbl_pr = table._tbl.tblPr
         borders = tbl_pr.first_child_found_in("w:tblBorders")
         if borders is None:
@@ -51,13 +52,13 @@ class TemplateBuilder:
             borders.append(elem)
 
     @staticmethod
-    def clear_cell_shading(cell):
+    def clear_cell_shading(cell: Any) -> None:
         tc_pr = cell._tc.get_or_add_tcPr()
         for shd in tc_pr.findall(qn("w:shd")):
             tc_pr.remove(shd)
 
     @staticmethod
-    def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
+    def set_cell_margins(cell: Any, top: int = 100, bottom: int = 100, left: int = 140, right: int = 140) -> None:
         tc_pr = cell._tc.get_or_add_tcPr()
         for old_mar in tc_pr.findall(qn("w:tcMar")):
             tc_pr.remove(old_mar)
@@ -70,7 +71,7 @@ class TemplateBuilder:
         tc_pr.append(tc_mar)
 
     @classmethod
-    def configure_document_styles(cls, doc):
+    def configure_document_styles(cls, doc: Any) -> None:
         normal_style = doc.styles["Normal"]
         normal_style.font.name = cls.FONT_NAME
         normal_style.font.size = Pt(12)
@@ -92,16 +93,16 @@ class TemplateBuilder:
     @classmethod
     def add_formatted_paragraph(
         cls,
-        doc,
-        text="",
-        size_pt=12.0,
-        bold=False,
-        italic=False,
-        align=WD_ALIGN_PARAGRAPH.JUSTIFY,
-        space_before=0.0,
-        space_after=6.0,
-        style_name=None,
-    ):
+        doc: Any,
+        text: str = "",
+        size_pt: float = 12.0,
+        bold: bool = False,
+        italic: bool = False,
+        align: Any = WD_ALIGN_PARAGRAPH.JUSTIFY,
+        space_before: float = 0.0,
+        space_after: float = 6.0,
+        style_name: str | None = None,
+    ) -> Any:
         p = doc.add_paragraph(style=style_name) if style_name else doc.add_paragraph()
         p.alignment = align
         p.paragraph_format.space_before = Pt(space_before)
@@ -117,7 +118,7 @@ class TemplateBuilder:
         return p
 
     @classmethod
-    def populate_two_col_table(cls, table, rows_data):
+    def populate_two_col_table(cls, table: Any, rows_data: list[tuple[str, str]]) -> None:
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         cls.set_table_borders_black(table, sz="4")
         col_widths = (Inches(2.37), Inches(3.90))
@@ -144,7 +145,7 @@ class TemplateBuilder:
                 run.font.color.rgb = cls.BLACK
 
     @classmethod
-    def build_preset_template(cls, config, output_path):
+    def build_preset_template(cls, config: PresetConfig, output_path: Path) -> Path:
         doc = Document()
         cls.configure_document_styles(doc)
 
@@ -166,7 +167,7 @@ class TemplateBuilder:
         )
         cls.add_formatted_paragraph(
             doc,
-            text="LAPORAN HASIL PENGUJIAN VULNERABILITY DISCLOSURE PROGRAM",
+            text="VULNERABILITY DISCLOSURE PROGRAM ASSESSMENT REPORT",
             size_pt=16,
             bold=True,
             align=WD_ALIGN_PARAGRAPH.CENTER,
@@ -210,7 +211,7 @@ class TemplateBuilder:
 
         cls.add_formatted_paragraph(
             doc,
-            text="Informasi Umum",
+            text="General Information",
             size_pt=14,
             bold=True,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
@@ -220,7 +221,7 @@ class TemplateBuilder:
         )
         cls.add_formatted_paragraph(
             doc,
-            text="Isi informasi dasar mengenai laporan dan aset yang diuji.",
+            text="Core metadata regarding the assessment report and the tested target asset.",
             size_pt=12,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
             space_before=0,
@@ -228,21 +229,21 @@ class TemplateBuilder:
         )
 
         info_rows = [
-            ("Nama Peserta", "{{NAMA_PESERTA}}"),
-            ("Nama Alias", "{{NAMA_ALIAS}}"),
-            ("Tanggal Pengujian", "{{TANGGAL_PENGUJIAN}}"),
-            ("Nama Aset", "{{NAMA_ASET}}"),
-            ("Jenis Aset", "{{JENIS_ASET}}"),
+            ("Participant Name", "{{NAMA_PESERTA}}"),
+            ("Participant Alias", "{{NAMA_ALIAS}}"),
+            ("Assessment Date", "{{TANGGAL_PENGUJIAN}}"),
+            ("Asset Name", "{{NAMA_ASET}}"),
+            ("Asset Type", "{{JENIS_ASET}}"),
             ("Domain/IP", "{{DOMAIN_IP}}"),
-            ("Versi Aplikasi (jika diketahui)", "{{VERSI_APLIKASI}}"),
-            ("Kontak Penanggung Jawab (opsional)", "{{KONTAK_PJ}}"),
+            ("Application Version", "{{VERSI_APLIKASI}}"),
+            ("Point of Contact", "{{KONTAK_PJ}}"),
         ]
         info_table = doc.add_table(rows=len(info_rows), cols=2)
         cls.populate_two_col_table(info_table, info_rows)
 
         cls.add_formatted_paragraph(
             doc,
-            text="*Data yang diperoleh akan kami rahasiakan dan tidak akan kami sebar luaskan, karena hanya akan digunakan untuk keperluan Vulnerability Disclosure Program {{ORG_NAME}}.",
+            text="*All data obtained during this assessment is kept strictly confidential and is used exclusively for the {{ORG_NAME}} Vulnerability Disclosure Program.",
             size_pt=11,
             italic=True,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
@@ -254,7 +255,7 @@ class TemplateBuilder:
 
         cls.add_formatted_paragraph(
             doc,
-            text="Detail Kerentanan",
+            text="Vulnerability Details",
             size_pt=14,
             bold=True,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
@@ -264,7 +265,7 @@ class TemplateBuilder:
         )
         cls.add_formatted_paragraph(
             doc,
-            text="Detail kerentanan yang ditemukan.",
+            text="Technical specification of the identified security vulnerability.",
             size_pt=12,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
             space_before=0,
@@ -272,19 +273,19 @@ class TemplateBuilder:
         )
 
         vuln_rows = [
-            ("Judul Kerentanan", "{{JUDUL_KERENTANAN}}"),
-            ("Kategori (OWASP/CWE/CVE bila ada)", "{{KATEGORI_KERENTANAN}}"),
-            ("Aset Terdampak", "{{NAMA_ASET}}"),
-            ("Jenis Aset", "{{JENIS_ASET}}"),
+            ("Vulnerability Title", "{{JUDUL_KERENTANAN}}"),
+            ("Category (OWASP/CWE/CVE)", "{{KATEGORI_KERENTANAN}}"),
+            ("Affected Asset", "{{NAMA_ASET}}"),
+            ("Asset Type", "{{JENIS_ASET}}"),
             ("Domain/IP", "{{DOMAIN_IP}}"),
             ("URL/Endpoint", "{{URL_ENDPOINT}}"),
-            ("Versi Aplikasi (jika diketahui)", "{{VERSI_APLIKASI}}"),
+            ("Application Version", "{{VERSI_APLIKASI}}"),
             ("Severity", "{{SEVERITY}}"),
             ("CVSS Score", "{{CVSS_SCORE}}"),
-            ("Deskripsi Kerentanan", "{{DESKRIPSI_KERENTANAN}}"),
-            ("Dampak", "{{DAMPAK_KERENTANAN}}"),
-            ("Rekomendasi Perbaikan", "{{REKOMENDASI_PERBAIKAN}}"),
-            ("Referensi", "{{REFERENSI}}"),
+            ("Vulnerability Description", "{{DESKRIPSI_KERENTANAN}}"),
+            ("Impact", "{{DAMPAK_KERENTANAN}}"),
+            ("Remediation Recommendation", "{{REKOMENDASI_PERBAIKAN}}"),
+            ("References", "{{REFERENSI}}"),
         ]
         vuln_table = doc.add_table(rows=len(vuln_rows), cols=2)
         cls.populate_two_col_table(vuln_table, vuln_rows)
@@ -320,7 +321,7 @@ class TemplateBuilder:
         )
         cls.add_formatted_paragraph(
             doc,
-            text="Bukti pengujian (Proof of Concept) berupa rincian paket HTTP Request/Response yang telah disanitasi serta rekomendasi perbaikan kode:",
+            text="Sanitized HTTP request/response evidence and recommended code remediation blueprint:",
             size_pt=12,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
             space_before=0,
@@ -346,7 +347,7 @@ class TemplateBuilder:
 
         cls.add_formatted_paragraph(
             doc,
-            text="Kesimpulan",
+            text="Conclusion",
             size_pt=14,
             bold=True,
             align=WD_ALIGN_PARAGRAPH.JUSTIFY,
@@ -368,7 +369,7 @@ class TemplateBuilder:
         return output_path
 
     @classmethod
-    def build_all_templates(cls, templates_dir):
+    def build_all_templates(cls, templates_dir: Path) -> list[Path]:
         templates_dir.mkdir(parents=True, exist_ok=True)
         built = []
         for preset_id, cfg in PRESET_CATALOG.items():

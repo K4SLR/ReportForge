@@ -10,13 +10,14 @@ _INVALID_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 
 
 def clean_xml_string(text: str) -> str:
+    """Strips invalid XML 1.0 control characters to prevent OpenXML parser errors."""
     if not text:
         return ""
     return _INVALID_XML_CHARS_RE.sub("", str(text))
 
 
 class CVSS31Calculator:
-    """FIRST.org CVSS v3.1 Base Score Calculator using official CSIRT severity labels."""
+    """FIRST.org CVSS v3.1 Base Score Calculator using standard CSIRT severity labels."""
 
     AV_WEIGHTS = {"N": 0.85, "A": 0.62, "L": 0.55, "P": 0.2}
     AC_WEIGHTS = {"L": 0.77, "H": 0.44}
@@ -215,6 +216,8 @@ class HTTPSanitizer:
 
 
 class ScopeGuard:
+    """Validates target URLs against In-Scope and Out-of-Scope wildcard boundaries."""
+
     def __init__(self, in_scope: List[str], out_of_scope: List[str]):
         self.in_scope = in_scope or ["*"]
         self.out_of_scope = out_of_scope or []
@@ -279,37 +282,39 @@ class ScopeGuard:
 
 
 class RemediationLibrary:
+    """DevFixer remediation blueprints, CWE/OWASP classifications, and references."""
+
     BLUEPRINTS: Dict[str, Dict[str, str]] = {
         "SQLI": {
             "cwe_id": "CWE-89 / OWASP A03:2021 - Injection",
             "lang": "python",
-            "summary": "Gunakan Parameterized Queries (Prepared Statements) pada seluruh kueri basis data serta terapkan validasi daftar putih (allowlist) yang ketat pada parameter pengurutan atau filter kolom.",
+            "summary": "Use parameterized queries (prepared statements) for all database operations and enforce strict allowlist validation on dynamic sort or filter column identifiers.",
             "references": "OWASP Top 10 A03:2021 (Injection), MITRE CWE-89, NIST SP 800-53 SI-10.",
             "code": (
                 "ALLOWED_SORT_COLUMNS = {'id', 'created_at', 'station_code'}\n"
                 "sort_col = request.args.get('sort', 'id')\n"
                 "if sort_col not in ALLOWED_SORT_COLUMNS:\n"
-                "    abort(400, 'Parameter pengurutan tidak valid')\n"
+                "    abort(400, 'Invalid sort parameter')\n"
                 "cursor.execute(f'SELECT id, metric FROM observations WHERE org_id = %s ORDER BY {sort_col} DESC', (current_user.org_id,))"
             ),
         },
         "IDOR": {
             "cwe_id": "CWE-639 / OWASP A01:2021 - Broken Access Control",
             "lang": "python",
-            "summary": "Terapkan verifikasi kepemilikan objek (Object-Level Authorization) pada setiap fungsi pengaksesan dokumen dengan memvalidasi kecocokan ID pemilik sumber daya terhadap sesi pengguna yang terautentikasi.",
+            "summary": "Enforce strict object-level authorization checks on every resource retrieval endpoint by verifying that the requested object belongs to the currently authenticated user session.",
             "references": "OWASP Top 10 A01:2021 (Broken Access Control), OWASP API Security API1:2023 (BOLA), MITRE CWE-639.",
             "code": (
                 "document_record = db.session.execute(\n"
                 "    select(Document).where(Document.id == doc_id, Document.owner_id == current_user.id)\n"
                 ").scalar_one_or_none()\n"
                 "if document_record is None:\n"
-                "    abort(403, 'Akses ditolak: Anda tidak memiliki otorisasi atas dokumen ini')"
+                "    abort(403, 'Access denied: You are not authorized to access this resource')"
             ),
         },
         "XSS": {
             "cwe_id": "CWE-79 / OWASP A03:2021 - Cross-Site Scripting (XSS)",
             "lang": "javascript",
-            "summary": "Lakukan kontekstual HTML entity encoding pada seluruh input pengguna sebelum dirender ke halaman peramban, hindari penggunaan innerHTML mentah, dan terapkan header Content-Security-Policy (CSP).",
+            "summary": "Apply context-aware HTML entity encoding to all untrusted user input prior to rendering, avoid unsafe DOM sinks such as innerHTML, and enforce a strict Content-Security-Policy (CSP).",
             "references": "OWASP Top 10 A03:2021 (Injection / XSS), MITRE CWE-79, OWASP XSS Prevention Cheat Sheet.",
             "code": (
                 "const safeCommentNode = document.createElement('div');\n"
@@ -320,35 +325,35 @@ class RemediationLibrary:
         "SSRF": {
             "cwe_id": "CWE-918 / OWASP A10:2021 - Server-Side Request Forgery",
             "lang": "python",
-            "summary": "Validasi skema dan domain tujuan terhadap daftar putih (allowlist) eksplisit serta blokir seluruh akses ke rentang alamat IP privat, loopback, dan link-local metadata setelah resolusi DNS.",
+            "summary": "Validate outbound URL schemes and hostnames against an explicit allowlist and block all connections to private, loopback, and link-local IP ranges after DNS resolution.",
             "references": "OWASP Top 10 A10:2021 (SSRF), MITRE CWE-918, CISA Cloud Security Technical Reference.",
             "code": (
                 "resolved_ip = ipaddress.ip_address(socket.gethostbyname(parsed_url.hostname))\n"
                 "if resolved_ip.is_private or resolved_ip.is_loopback or resolved_ip.is_link_local:\n"
-                "    raise ValueError('Akses ke alamat jaringan internal ditolak')"
+                "    raise ValueError('Outbound connection to internal network address blocked')"
             ),
         },
         "PATH_TRAVERSAL": {
             "cwe_id": "CWE-22 / OWASP A01:2021 - Path Traversal",
             "lang": "python",
-            "summary": "Lakukan kanonikalisasi jalur berkas menggunakan Path.resolve() dan pastikan jalur akhir tetap berada di dalam direktori dasar yang diizinkan menggunakan is_relative_to().",
+            "summary": "Canonicalize file paths using Path.resolve() and verify that the resolved target path remains strictly inside the permitted base directory using is_relative_to().",
             "references": "OWASP Top 10 A01:2021 (Broken Access Control), MITRE CWE-22, OWASP File System Security.",
             "code": (
                 "safe_base = Path('/var/app/uploads').resolve()\n"
                 "target_path = (safe_base / Path(user_filename).name).resolve()\n"
                 "if not target_path.is_relative_to(safe_base):\n"
-                "    abort(403, 'Percobaan manipulasi direktori diblokir')"
+                "    abort(403, 'Directory traversal attempt blocked')"
             ),
         },
         "INFO_DISCLOSURE": {
             "cwe_id": "CWE-200 / OWASP A05:2021 - Security Misconfiguration",
             "lang": "nginx",
-            "summary": "Nonaktifkan eksposur banner versi perangkat lunak server, batasi akses ke berkas konfigurasi sensitif, dan terapkan penyaringan skema DTO pada respons API publik.",
+            "summary": "Disable verbose server version banners, restrict access to sensitive configuration files, and enforce strict DTO response serialization schemas on public API endpoints.",
             "references": "OWASP Top 10 A05:2021 (Security Misconfiguration), MITRE CWE-200, CIS Benchmark Web Server Hardening.",
             "code": (
                 "server_tokens off;\n"
                 "proxy_hide_header X-Powered-By;\n"
-                "location ~ /\.(env|git|svn) { deny all; return 404; }"
+                "location ~ /\\.(env|git|svn) { deny all; return 404; }"
             ),
         },
     }
@@ -356,9 +361,9 @@ class RemediationLibrary:
     DEFAULT_BLUEPRINT = {
         "cwe_id": "CWE-284 / OWASP A01:2021 - Improper Access Control",
         "lang": "text",
-        "summary": "Terapkan validasi input sisi server, pengodean output, prinsip hak akses minimum (least privilege), serta mekanisme pertahanan berlapis pada titik akhir terdampak.",
+        "summary": "Enforce server-side input validation, contextual output encoding, least-privilege access controls, and defense-in-depth checks across affected endpoints.",
         "references": "OWASP Application Security Verification Standard (ASVS v4.0), MITRE CWE-284.",
-        "code": "# Pastikan validasi otorisasi dan sanitasi parameter dilakukan secara ketat di sisi server.",
+        "code": "# Ensure strict server-side authorization and parameter sanitization are enforced.",
     }
 
     @classmethod
