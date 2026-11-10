@@ -1,6 +1,10 @@
 # ReportForge
 
 <p align="center">
+  <img src="assets/reportforge-logo.png" alt="ReportForge Logo" width="200" />
+</p>
+
+<p align="center">
   <a href="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml"><img src="https://github.com/K4SLR/reportforge/actions/workflows/ci.yml/badge.svg" alt="ReportForge CI Status" /></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python Version" />
   <img src="https://img.shields.io/badge/release-v2.0.0-0ea5e9" alt="Release Version" />
@@ -60,6 +64,8 @@ reportforge/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml           # GitHub Actions automated test workflow
+├── assets/
+│   └── reportforge-logo.png # Project logo
 ├── reportforge/
 │   ├── __init__.py          # Package version metadata
 │   ├── __main__.py          # Python module execution entrypoint
@@ -223,7 +229,7 @@ python -m unittest discover -s tests -v
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date&theme=dark" />
       <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date" />
-      <img alt="ReportForge Star History Chart" src="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date" />
+      <img alt="ReportForge Logo" src="assets/reportforge-logo.png" width="180" />
     </picture>
   </a>
 </p>
