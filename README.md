@@ -229,7 +229,7 @@ python -m unittest discover -s tests -v
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date&theme=dark" />
       <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date" />
-      <img alt="ReportForge Logo" src="assets/reportforge-logo.png" width="180" />
+      <img alt="ReportForge Star History Chart" src="https://api.star-history.com/svg?repos=K4SLR/reportforge&type=Date" width="100%" />
     </picture>
   </a>
 </p>
